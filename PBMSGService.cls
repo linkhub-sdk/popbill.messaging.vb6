@@ -115,10 +115,10 @@ Public Property Let IsTest(ByVal value As Boolean)
     m_IsTest = value
 End Property
 '초기화
-Public Sub Initialize(PartnerID As String, SecretKey As String)
+Public Sub Initialize(LinkID As String, SecretKey As String)
     Set m_Linkhub = New Linkhub
     
-    m_Linkhub.PartnerID = PartnerID
+    m_Linkhub.LinkID = LinkID
     m_Linkhub.SercetKey = SecretKey
     
     m_scope.Add "member"
@@ -376,11 +376,11 @@ ErrHandler:
     GetPopbillURL = ""
 End Function
 '회원가입 여부
-Public Function CheckIsMember(CorpNum As String, PartnerID As String) As PBResponse
+Public Function CheckIsMember(CorpNum As String, LinkID As String) As PBResponse
 On Error GoTo ErrHandler
     Dim result As Variant
     
-    Set result = httpGET("/Join?CorpNum=" + CorpNum + "&PID=" + PartnerID, "")
+    Set result = httpGET("/Join?CorpNum=" + CorpNum + "&LID=" + LinkID, "")
     
     Set CheckIsMember = New PBResponse
     CheckIsMember.code = result.Item("code")
@@ -401,7 +401,7 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "PartnerID", JoinInfo.PartnerID
+    tmp.Add "LinkID", JoinInfo.LinkID
     tmp.Add "CorpNum", JoinInfo.CorpNum
     tmp.Add "CorpName", JoinInfo.CorpName
     tmp.Add "CEOName", JoinInfo.CEOName
