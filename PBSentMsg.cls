@@ -30,7 +30,7 @@ Public Sub fromDictionary(dic As Variant)
 
     state = dic.Item("state")
     subject = dic.Item("subject")
-    messageType = dic.Item("messageType")
+    messageType = dic.Item("type")
     content = dic.Item("content")
     sendNum = dic.Item("sendNum")
     receiveNum = dic.Item("receiveNum")
