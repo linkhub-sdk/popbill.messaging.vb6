@@ -122,10 +122,10 @@ Public Property Let IsTest(ByVal value As Boolean)
     m_IsTest = value
 End Property
 '초기화
-Public Sub Initialize(linkID As String, SecretKey As String)
+Public Sub Initialize(LinkID As String, SecretKey As String)
     Set m_Linkhub = New Linkhub
     
-    m_Linkhub.linkID = linkID
+    m_Linkhub.LinkID = LinkID
     m_Linkhub.SercetKey = SecretKey
     
     m_scope.Add "member"
@@ -273,7 +273,7 @@ Private Function GetOnlyFileName(ByVal FilePath As String) As String
 
 End Function
 
-Private Function httpPOST_File(url As String, BearerToken As String, postdata As String, FilePath As String, Optional UserID As String) As Variant
+Private Function httpPOST_File(url As String, BearerToken As String, postdata As String, FilePaths As Collection, Optional UserID As String) As Variant
      
     Dim winhttp1
     Dim boundary As String
@@ -294,41 +294,95 @@ Private Function httpPOST_File(url As String, BearerToken As String, postdata As
     
     Call winhttp1.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary)
     
+    Dim applicationform As String
     
     If postdata <> "" Then
-        'TODO 첨부전문 구성.
+        applicationform = "--" & boundary & vbCrLf & _
+                          "Content-Disposition: form-data; name=""form""" & vbCrLf & _
+                          "Content-Type: Application/json" & vbCrLf & vbCrLf & _
+                          postdata
     
     End If
     
-    Dim head, tail As String
+    Dim btFilePart As New Collection
     
-    head = "--" & boundary & vbCrLf & _
-           "Content-Disposition: form-data; name=""Filedata""; filename=""" & GetOnlyFileName(FilePath) & """" + vbCrLf & _
-           "Content-Type: application/octet-stream" & vbCrLf & vbCrLf
-           
+    'Dim btFilePart() As Byte
+    Dim filePartSize As Long
+    
+    filePartSize = 0
+    
+    Dim fileCnt As Integer
+    
+    For fileCnt = 1 To FilePaths.Count
+        Dim FilePath As String
+        
+        FilePath = FilePaths.Item(fileCnt)
+        
+        If FilePath = "" Then Err.Raise -99999999, "POPBILL", "전송파일 경로가 잘못되었습니다."
+        
+        Dim FileHeader As String
+        
+        FileHeader = vbCrLf & "--" & boundary & vbCrLf & _
+               "Content-Disposition: form-data; name=""file""; filename=""" & GetOnlyFileName(FilePath) & """" + vbCrLf & _
+               "Content-Type: application/octet-stream" & vbCrLf & vbCrLf
+               
+        
+        '### 이미지 바이너리를 얻는다.
+        Dim binary() As Byte
+        Open FilePath For Binary Access Read As #1
+             ReDim binary(LOF(1))
+             Get #1, , binary
+        Close #1
+              
+        Dim btFHeader() As Byte
+        Dim headerSize, fileSize As Long
+        btFHeader = UniStrToUTF8(FileHeader)
+        
+        headerSize = UBound(btFHeader) + 1
+        fileSize = UBound(binary) - LBound(binary)
+        Dim btFile() As Byte
+        
+        ReDim btFile(headerSize + fileSize)
+        
+        CopyMemory btFile(0), btFHeader(0), headerSize
+        CopyMemory btFile(headerSize), binary(0), fileSize
+        
+        filePartSize = filePartSize + UBound(btFile)
+        
+        btFilePart.Add btFile
+        
+        
+    Next
+    
+    
+    Dim tail As String
+    
     tail = vbCrLf & "--" & boundary & "--" & vbCrLf
     
-    '### 이미지 바이너리를 얻는다.
-    Dim binary() As Byte
-    Open FilePath For Binary Access Read As #1
-         ReDim binary(LOF(1))
-         Get #1, , binary
-    Close #1
+    Dim btForm() As Byte, BtTail() As Byte, Buffer() As Byte
+    Dim formSize, tailSize As Long
     
-    '### 전송할 데이터를 만든다.
-    Dim BHeader1() As Byte, BHeader2() As Byte, Buffer() As Byte
-    Dim Size1 As Long, Size2 As Long, Size3 As Long
-    BHeader1 = UniStrToUTF8(head)
-    BHeader2 = StrConv(tail, vbFromUnicode)
+    btForm = StrConv(applicationform, vbFromUnicode)
+    BtTail = StrConv(tail, vbFromUnicode)
     
-    Size1 = UBound(BHeader1)
-    Size2 = UBound(binary)
-    Size3 = UBound(BHeader2)
+    formSize = UBound(btForm) + 1
+    tailSize = UBound(BtTail) + 1
     
-    ReDim Buffer(Size1 + Size2 + Size3 + 2)
-    CopyMemory Buffer(0), BHeader1(0), Size1 + 1
-    CopyMemory Buffer(Size1 + 1), binary(0), Size2 + 1
-    CopyMemory Buffer(Size1 + Size2 + 2), BHeader2(0), Size3 + 1
+    ReDim Buffer(formSize + filePartSize + tailSize)
+    CopyMemory Buffer(0), btForm(0), formSize
+    
+    Dim i As Integer
+    Dim offsetPost As Long
+    offsetPost = formSize
+    For i = 1 To btFilePart.Count
+        Dim tmp() As Byte
+        tmp = btFilePart.Item(i)
+        
+        CopyMemory Buffer(offsetPost), tmp(0), UBound(tmp)
+        offsetPost = offsetPost + UBound(tmp)
+    Next
+    
+    CopyMemory Buffer(formSize + filePartSize), BtTail(0), tailSize
     
     winhttp1.send (Buffer)
     winhttp1.WaitForResponse
@@ -392,11 +446,11 @@ ErrHandler:
     GetPopbillURL = ""
 End Function
 '회원가입 여부
-Public Function CheckIsMember(CorpNum As String, linkID As String) As PBResponse
+Public Function CheckIsMember(CorpNum As String, LinkID As String) As PBResponse
 On Error GoTo ErrHandler
     Dim result As Variant
     
-    Set result = httpGET("/Join?CorpNum=" + CorpNum + "&LID=" + linkID, "")
+    Set result = httpGET("/Join?CorpNum=" + CorpNum + "&LID=" + LinkID, "")
     
     Set CheckIsMember = New PBResponse
     CheckIsMember.code = result.Item("code")
@@ -417,7 +471,7 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "LinkID", JoinInfo.linkID
+    tmp.Add "LinkID", JoinInfo.LinkID
     tmp.Add "CorpNum", JoinInfo.CorpNum
     tmp.Add "CorpName", JoinInfo.CorpName
     tmp.Add "CEOName", JoinInfo.CEOName
@@ -474,7 +528,42 @@ ErrHandler:
     GetUnitCost = m_LastErrCode
 
 End Function
-
+'SendMMS
+Public Function SendMMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, FilePaths As Collection, reserveDT As String, UserID As String) As String
+    Dim result As Variant
+    If Messages Is Nothing Or Messages.Count = 0 Then
+        Err.Raise -99999999, "POPBILL", "전송할 메시지가 입력되지 않았습니다."
+    End If
+    If FilePaths Is Nothing Or FilePaths.Count = 0 Then Err.Raise -99999999, "POPBILL", "전송할 파일경로가 입력되지 않았습니다."
+    
+    Dim request As Variant
+    
+    Set request = CreateObject("Scripting.Dictionary")
+    
+    If sender <> "" Then request.Add "snd", sender
+    If Contents <> "" Then request.Add "content", Contents
+    If subject <> "" Then request.Add "subject", subject
+    If reserveDT <> "" Then request.Add "sndDT", reserveDT
+    
+    Dim msgs As New Collection
+    
+    Dim msg As PBMessage
+    
+    For Each msg In Messages
+    
+        msgs.Add msg.toDictionary
+    Next
+    
+    request.Add "msgs", msgs
+    
+    Dim postdata As String
+    
+    postdata = m_Linkhub.toString(request)
+    
+    Set result = httpPOST_File("/MMS", getSession_token(CorpNum), postdata, FilePaths, UserID)
+    
+    SendMMS = result.Item("receiptNum")
+End Function
 '단문 전송
 Public Function SendSMS(CorpNum As String, sender As String, Contents As String, Messages As Collection, reserveDT As String, Optional UserID As String) As String
     SendSMS = SendMessage("SMS", CorpNum, sender, "", Contents, Messages, reserveDT, UserID)
