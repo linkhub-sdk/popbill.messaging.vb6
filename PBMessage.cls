@@ -24,7 +24,6 @@ Public Function toDictionary() As Variant
     Set toDictionary = CreateObject("Scripting.Dictionary")
     
     toDictionary.Add "rcv", receiver
-    
     If sender <> "" Then toDictionary.Add "snd", sender
     If receiverName <> "" Then toDictionary.Add "rcvnm", receiverName
     If content <> "" Then toDictionary.Add "msg", content
