@@ -194,7 +194,7 @@ Private Function httpGET(url As String, BearerToken As String, Optional UserID A
     End If
     
     
-    winhttp1.Send
+    winhttp1.send
     
     Dim Response As String
     Response = winhttp1.responseText
@@ -245,7 +245,7 @@ Private Function httpPOST_override(url As String, BearerToken As String, overrid
     
     Call winhttp1.setRequestHeader("Content-Type", "Application/json")
     
-    winhttp1.Send (postdata)
+    winhttp1.send (postdata)
         
     Dim Response As String
     Response = winhttp1.responseText
@@ -277,7 +277,6 @@ Private Function GetOnlyFileName(ByVal FilePath As String) As String
 End Function
 
 Private Function httpPOST_File(url As String, BearerToken As String, postdata As String, FilePaths As Collection, Optional UserID As String) As Variant
-     
     Dim winhttp1
     Dim boundary As String
     boundary = "---------------------popbill"
@@ -298,43 +297,97 @@ Private Function httpPOST_File(url As String, BearerToken As String, postdata As
     
     Call winhttp1.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary)
     
+    Dim applicationform As String
     
     If postdata <> "" Then
-        'TODO 첨부전문 구성.
+        applicationform = "--" & boundary & vbCrLf & _
+                          "Content-Disposition: form-data; name=""form""" & vbCrLf & _
+                          "Content-Type: Application/json" & vbCrLf & vbCrLf & _
+                          postdata
     
     End If
     
-    Dim head, tail As String
+    Dim btFilePart As New Collection
     
-    head = "--" & boundary & vbCrLf & _
-           "Content-Disposition: form-data; name=""Filedata""; filename=""" & GetOnlyFileName(FilePath) & """" + vbCrLf & _
-           "Content-Type: application/octet-stream" & vbCrLf & vbCrLf
-           
+    'Dim btFilePart() As Byte
+    Dim filePartSize As Long
+    
+    filePartSize = 0
+    
+    Dim fileCnt As Integer
+    
+    For fileCnt = 1 To FilePaths.Count
+        Dim FilePath As String
+        
+        FilePath = FilePaths.Item(fileCnt)
+        
+        If FilePath = "" Then Err.Raise -99999999, "POPBILL", "전송파일 경로가 잘못되었습니다."
+        
+        Dim FileHeader As String
+        
+        FileHeader = vbCrLf & "--" & boundary & vbCrLf & _
+               "Content-Disposition: form-data; name=""file""; filename=""" & GetOnlyFileName(FilePath) & """" + vbCrLf & _
+               "Content-Type: application/octet-stream" & vbCrLf & vbCrLf
+               
+        
+        '### 이미지 바이너리를 얻는다.
+        Dim binary() As Byte
+        Open FilePath For Binary Access Read As #1
+             ReDim binary(LOF(1))
+             Get #1, , binary
+        Close #1
+              
+        Dim btFHeader() As Byte
+        Dim headerSize, fileSize As Long
+        btFHeader = UniStrToUTF8(FileHeader)
+        
+        headerSize = UBound(btFHeader) + 1
+        fileSize = UBound(binary) - LBound(binary)
+        Dim btFile() As Byte
+        
+        ReDim btFile(headerSize + fileSize)
+        
+        CopyMemory btFile(0), btFHeader(0), headerSize
+        CopyMemory btFile(headerSize), binary(0), fileSize
+        
+        filePartSize = filePartSize + UBound(btFile)
+        
+        btFilePart.Add btFile
+        
+        
+    Next
+    
+    
+    Dim tail As String
+    
     tail = vbCrLf & "--" & boundary & "--" & vbCrLf
     
-    '### 이미지 바이너리를 얻는다.
-    Dim binary() As Byte
-    Open FilePath For Binary Access Read As #1
-         ReDim binary(LOF(1))
-         Get #1, , binary
-    Close #1
+    Dim btForm() As Byte, BtTail() As Byte, Buffer() As Byte
+    Dim formSize, tailSize As Long
     
-    '### 전송할 데이터를 만든다.
-    Dim BHeader1() As Byte, BHeader2() As Byte, Buffer() As Byte
-    Dim Size1 As Long, Size2 As Long, Size3 As Long
-    BHeader1 = UniStrToUTF8(head)
-    BHeader2 = StrConv(tail, vbFromUnicode)
+    btForm = StrConv(applicationform, vbFromUnicode)
+    BtTail = StrConv(tail, vbFromUnicode)
     
-    Size1 = UBound(BHeader1)
-    Size2 = UBound(binary)
-    Size3 = UBound(BHeader2)
+    formSize = UBound(btForm) + 1
+    tailSize = UBound(BtTail) + 1
     
-    ReDim Buffer(Size1 + Size2 + Size3 + 2)
-    CopyMemory Buffer(0), BHeader1(0), Size1 + 1
-    CopyMemory Buffer(Size1 + 1), binary(0), Size2 + 1
-    CopyMemory Buffer(Size1 + Size2 + 2), BHeader2(0), Size3 + 1
+    ReDim Buffer(formSize + filePartSize + tailSize)
+    CopyMemory Buffer(0), btForm(0), formSize
     
-    winhttp1.Send (Buffer)
+    Dim i As Integer
+    Dim offsetPost As Long
+    offsetPost = formSize
+    For i = 1 To btFilePart.Count
+        Dim tmp() As Byte
+        tmp = btFilePart.Item(i)
+        
+        CopyMemory Buffer(offsetPost), tmp(0), UBound(tmp)
+        offsetPost = offsetPost + UBound(tmp)
+    Next
+    
+    CopyMemory Buffer(formSize + filePartSize), BtTail(0), tailSize
+    
+    winhttp1.send (Buffer)
         
     Dim Response As String
     Response = winhttp1.responseText
@@ -354,8 +407,8 @@ Private Function httpPOST_File(url As String, BearerToken As String, postdata As
     Set winhttp1 = Nothing
     
     Set httpPOST_File = m_Linkhub.parse(Response)
-
 End Function
+
 '연동회원 아이디 중복 확인
 Public Function CheckID(IDString As String) As PBResponse
 On Error GoTo ErrHandler
@@ -410,8 +463,8 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "id", ContactInfo.id
-    tmp.Add "pwd", ContactInfo.pwd
+    tmp.Add "id", ContactInfo.ID
+    tmp.Add "pwd", ContactInfo.PWD
     tmp.Add "personName", ContactInfo.personName
     tmp.Add "tel", ContactInfo.tel
     tmp.Add "hp", ContactInfo.hp
@@ -478,11 +531,11 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "ceoname", CorpInfo.ceoname
-    tmp.Add "corpName", CorpInfo.corpName
-    tmp.Add "addr", CorpInfo.addr
-    tmp.Add "bizType", CorpInfo.bizType
-    tmp.Add "bizClass", CorpInfo.bizClass
+    tmp.Add "ceoname", CorpInfo.CEOName
+    tmp.Add "corpName", CorpInfo.CorpName
+    tmp.Add "addr", CorpInfo.Addr
+    tmp.Add "bizType", CorpInfo.BizType
+    tmp.Add "bizClass", CorpInfo.BizClass
             
     postdata = m_Linkhub.toString(tmp)
     
@@ -582,19 +635,19 @@ On Error GoTo ErrHandler
     
     tmp.Add "LinkID", JoinInfo.LinkID
     tmp.Add "CorpNum", JoinInfo.CorpNum
-    tmp.Add "CorpName", JoinInfo.corpName
-    tmp.Add "CEOName", JoinInfo.ceoname
-    tmp.Add "Addr", JoinInfo.addr
+    tmp.Add "CorpName", JoinInfo.CorpName
+    tmp.Add "CEOName", JoinInfo.CEOName
+    tmp.Add "Addr", JoinInfo.Addr
     tmp.Add "ZipCode", JoinInfo.ZipCode
-    tmp.Add "BizClass", JoinInfo.bizClass
-    tmp.Add "BizType", JoinInfo.bizType
+    tmp.Add "BizClass", JoinInfo.BizClass
+    tmp.Add "BizType", JoinInfo.BizType
     tmp.Add "ContactName", JoinInfo.ContactName
     tmp.Add "ContactEmail", JoinInfo.ContactEmail
     tmp.Add "ContactFAX", JoinInfo.ContactFAX
     tmp.Add "ContactHP", JoinInfo.ContactHP
     tmp.Add "ContactTEL", JoinInfo.ContactTEL
-    tmp.Add "ID", JoinInfo.id
-    tmp.Add "PWD", JoinInfo.pwd
+    tmp.Add "ID", JoinInfo.ID
+    tmp.Add "PWD", JoinInfo.PWD
     
     postdata = m_Linkhub.toString(tmp)
     
@@ -730,7 +783,7 @@ ErrHandler:
 End Function
 
 '전송내역 목록 조회
-Public Function Search(CorpNum As String, SDate As String, EDate As String, State As Collection, Item As Collection, ReserveYN As Boolean, SenderYN As Boolean, Page As Integer, PerPage As Integer) As PBSearchList
+Public Function Search(CorpNum As String, SDate As String, EDate As String, state As Collection, Item As Collection, ReserveYN As Boolean, SenderYN As Boolean, Page As Integer, PerPage As Integer) As PBSearchList
 On Error GoTo ErrHandler
     Dim result As Variant
     Dim uri As String
@@ -749,10 +802,10 @@ On Error GoTo ErrHandler
     uri = uri + "?SDate=" + SDate
     uri = uri + "&EDate=" + EDate
     
-    If State.Count > 0 Then
+    If state.Count > 0 Then
         uri = uri + "&State="
-        For i = 1 To State.Count
-            uri = uri + State(i) + ","
+        For i = 1 To state.Count
+            uri = uri + state(i) + ","
         Next
         
     End If
