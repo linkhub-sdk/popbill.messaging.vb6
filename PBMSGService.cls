@@ -38,7 +38,7 @@ Private m_token_Dic
 Private m_Linkhub As Linkhub
 Private m_scope As New Collection
 Private m_LastErrCode As Long
-Private m_LastErrMessage As Strings
+Private m_LastErrMessage As String
 
 Public Enum MsgType
     SMS
