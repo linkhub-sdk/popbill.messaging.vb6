@@ -38,7 +38,7 @@ Private m_token_Dic
 Private m_Linkhub As Linkhub
 Private m_scope As New Collection
 Private m_LastErrCode As Long
-Private m_LastErrMessage As String
+Private m_LastErrMessage As Strings
 
 Public Enum MsgType
     SMS
@@ -783,7 +783,7 @@ ErrHandler:
 End Function
 
 '전송내역 목록 조회
-Public Function Search(CorpNum As String, SDate As String, EDate As String, state As Collection, Item As Collection, ReserveYN As Boolean, SenderYN As Boolean, Page As Integer, PerPage As Integer) As PBSearchList
+Public Function Search(CorpNum As String, SDate As String, EDate As String, state As Collection, Item As Collection, ReserveYN As Boolean, SenderYN As Boolean, Page As Integer, PerPage As Integer, Order As String) As PBSearchList
 On Error GoTo ErrHandler
     Dim result As Variant
     Dim uri As String
@@ -831,6 +831,7 @@ On Error GoTo ErrHandler
     
     uri = uri + "&Page=" + CStr(Page)
     uri = uri + "&PerPage=" + CStr(PerPage)
+    uri = uri + "&Order=" + Order
         
     Set result = httpGET(uri, getSession_token(CorpNum), "")
     

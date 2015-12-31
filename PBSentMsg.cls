@@ -20,12 +20,12 @@ Public content         As String
 Public sendNum         As String
 Public receiveNum      As String
 Public receiveName     As String
+Public receiptDT       As String
 Public reserveDT       As String
 Public sendDT          As String
 Public resultDT        As String
 Public sendResult      As String
 Public tranNet         As String
-
 
 Public Sub fromDictionary(dic As Variant)
 
@@ -36,6 +36,7 @@ Public Sub fromDictionary(dic As Variant)
     sendNum = dic.Item("sendNum")
     receiveNum = dic.Item("receiveNum")
     receiveName = dic.Item("receiveName")
+    receiptDT = dic.Item("receiptDT")
     reserveDT = dic.Item("reserveDT")
     sendDT = dic.Item("sendDT")
     resultDT = dic.Item("resultDT")
