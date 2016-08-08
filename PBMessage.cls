@@ -14,6 +14,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public sender As String
+Public senderName As String
 Public receiver As String
 Public receiverName As String
 Public content As String
@@ -25,6 +26,7 @@ Public Function toDictionary() As Variant
     
     toDictionary.Add "rcv", receiver
     If sender <> "" Then toDictionary.Add "snd", sender
+    If senderName <> "" Then toDictionary.Add "sndnm", senderName
     If receiverName <> "" Then toDictionary.Add "rcvnm", receiverName
     If content <> "" Then toDictionary.Add "msg", content
     If subject <> "" Then toDictionary.Add "sjt", subject

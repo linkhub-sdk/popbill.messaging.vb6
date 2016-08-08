@@ -18,6 +18,7 @@ Public subject         As String
 Public messageType     As String
 Public content         As String
 Public sendNum         As String
+Public senderName      As String
 Public receiveNum      As String
 Public receiveName     As String
 Public receiptDT       As String
@@ -34,6 +35,7 @@ Public Sub fromDictionary(dic As Variant)
     messageType = dic.Item("type")
     content = dic.Item("content")
     sendNum = dic.Item("sendNum")
+    senderName = dic.Item("senderName")
     receiveNum = dic.Item("receiveNum")
     receiveName = dic.Item("receiveName")
     receiptDT = dic.Item("receiptDT")
