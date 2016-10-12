@@ -721,7 +721,7 @@ ErrHandler:
 
 End Function
 'SendMMS
-Public Function SendMMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, FilePaths As Collection, reserveDT As String, adsYN As Boolean, UserID As String, Optional SenderName) As String
+Public Function SendMMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, FilePaths As Collection, reserveDT As String, adsYN As Boolean, UserID As String, Optional senderName As String) As String
     Dim result As Variant
     If Messages Is Nothing Or Messages.Count = 0 Then
         Err.Raise -99999999, "POPBILL", "전송할 메시지가 입력되지 않았습니다."
@@ -733,7 +733,7 @@ Public Function SendMMS(CorpNum As String, sender As String, subject As String, 
     Set request = CreateObject("Scripting.Dictionary")
     If adsYN Then request.Add "adsYN", True
     If sender <> "" Then request.Add "snd", sender
-    If SenderName <> "" Then request.Add "sndnm", SenderName
+    If senderName <> "" Then request.Add "sndnm", senderName
     If Contents <> "" Then request.Add "content", Contents
     If subject <> "" Then request.Add "subject", subject
     If reserveDT <> "" Then request.Add "sndDT", reserveDT
@@ -758,19 +758,19 @@ Public Function SendMMS(CorpNum As String, sender As String, subject As String, 
     SendMMS = result.Item("receiptNum")
 End Function
 '단문 전송
-Public Function SendSMS(CorpNum As String, sender As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional SenderName As String) As String
-    SendSMS = SendMessage("SMS", CorpNum, sender, "", Contents, Messages, reserveDT, adsYN, UserID, SenderName)
+Public Function SendSMS(CorpNum As String, sender As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional senderName As String) As String
+    SendSMS = SendMessage("SMS", CorpNum, sender, "", Contents, Messages, reserveDT, adsYN, UserID, senderName)
 End Function
 '장문전송
-Public Function SendLMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional SenderName As String) As String
-    SendLMS = SendMessage("LMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, SenderName)
+Public Function SendLMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional senderName As String) As String
+    SendLMS = SendMessage("LMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, senderName)
 End Function
 '단/장문 길이 자동인식 전송
-Public Function SendXMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional SenderName As String) As String
-    SendXMS = SendMessage("XMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, SenderName)
+Public Function SendXMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional senderName As String) As String
+    SendXMS = SendMessage("XMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, senderName)
 End Function
 
-Private Function SendMessage(MType As String, CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional SenderName As String) As String
+Private Function SendMessage(MType As String, CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String, Optional senderName As String) As String
 On Error GoTo ErrHandler
     Dim result As Variant
     If Messages Is Nothing Or Messages.Count = 0 Then
@@ -783,7 +783,7 @@ On Error GoTo ErrHandler
     If adsYN Then request.Add "adsYN", True
     
     If sender <> "" Then request.Add "snd", sender
-    If SenderName <> "" Then request.Add "sndnm", SenderName
+    If senderName <> "" Then request.Add "sndnm", senderName
     If Contents <> "" Then request.Add "content", Contents
     If subject <> "" Then request.Add "subject", subject
     If reserveDT <> "" Then request.Add "sndDT", reserveDT
