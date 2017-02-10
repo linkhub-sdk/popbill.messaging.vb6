@@ -14,6 +14,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public state           As Integer
+Public result          As Integer
 Public subject         As String
 Public messageType     As String
 Public content         As String
@@ -31,6 +32,7 @@ Public tranNet         As String
 Public Sub fromDictionary(dic As Variant)
 
     state = dic.Item("state")
+    result = dic.Item("result")
     subject = dic.Item("subject")
     messageType = dic.Item("type")
     content = dic.Item("content")
