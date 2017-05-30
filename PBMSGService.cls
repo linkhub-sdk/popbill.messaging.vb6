@@ -24,7 +24,7 @@ Option Explicit
 ' Author : Kim Seongjun (pallet027@gmail.com)
 ' Written : 2014-04-22
 ' Contributor : Jeong Yohan (code@linkhub.co.kr)
-' Updated : 2017-05-24
+' Updated : 2017-05-29
 '
 ' Thanks for your interest.
 '=================================================================================
@@ -980,3 +980,31 @@ ErrHandler:
     m_LastErrMessage = Err.Description
     Set GetAutoDenyList = Nothing
 End Function
+
+'발신번호 목록 조회
+Public Function GetSenderNumberList(CorpNum As String, Optional UserID As String = "") As Collection
+On Error GoTo ErrHandler
+
+    Dim result As Variant
+    
+    Set result = httpGET("/Message/SenderNumber", getSession_token(CorpNum), UserID)
+    
+    Set GetSenderNumberList = New Collection
+    
+    Dim T As Variant
+    Dim info As PBMsgSenderNumber
+    
+    For Each T In result
+        Set info = New PBMsgSenderNumber
+        info.fromDictionary T
+        GetSenderNumberList.Add info
+    Next
+    
+    Exit Function
+   
+ErrHandler:
+    m_LastErrCode = Err.number
+    m_LastErrMessage = Err.Description
+    Set GetSenderNumberList = Nothing
+End Function
+
