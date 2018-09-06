@@ -196,7 +196,7 @@ Private Function httpGET(url As String, BearerToken As String, Optional UserID A
     End If
     
     
-    winhttp1.send
+    winhttp1.Send
     
     Dim Response As String
     Response = winhttp1.responseText
@@ -247,7 +247,7 @@ Private Function httpPOST_override(url As String, BearerToken As String, overrid
     
     Call winhttp1.setRequestHeader("Content-Type", "Application/json")
     
-    winhttp1.send (postdata)
+    winhttp1.Send (postdata)
         
     Dim Response As String
     Response = winhttp1.responseText
@@ -389,7 +389,7 @@ Private Function httpPOST_File(url As String, BearerToken As String, postdata As
     
     CopyMemory Buffer(formSize + filePartSize), BtTail(0), tailSize
     
-    winhttp1.send (Buffer)
+    winhttp1.Send (Buffer)
         
     Dim Response As String
     Response = winhttp1.responseText
@@ -465,8 +465,8 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "id", ContactInfo.ID
-    tmp.Add "pwd", ContactInfo.PWD
+    tmp.Add "id", ContactInfo.id
+    tmp.Add "pwd", ContactInfo.pwd
     tmp.Add "personName", ContactInfo.personName
     tmp.Add "tel", ContactInfo.tel
     tmp.Add "hp", ContactInfo.hp
@@ -500,7 +500,7 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "id", ContactInfo.ID
+    tmp.Add "id", ContactInfo.id
     tmp.Add "personName", ContactInfo.personName
     tmp.Add "tel", ContactInfo.tel
     tmp.Add "hp", ContactInfo.hp
@@ -534,11 +534,11 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "ceoname", CorpInfo.CEOName
-    tmp.Add "corpName", CorpInfo.CorpName
-    tmp.Add "addr", CorpInfo.Addr
-    tmp.Add "bizType", CorpInfo.BizType
-    tmp.Add "bizClass", CorpInfo.BizClass
+    tmp.Add "ceoname", CorpInfo.ceoname
+    tmp.Add "corpName", CorpInfo.corpName
+    tmp.Add "addr", CorpInfo.addr
+    tmp.Add "bizType", CorpInfo.bizType
+    tmp.Add "bizClass", CorpInfo.bizClass
             
     postdata = m_Linkhub.toString(tmp)
     
@@ -652,19 +652,19 @@ On Error GoTo ErrHandler
     
     tmp.Add "LinkID", JoinInfo.LinkID
     tmp.Add "CorpNum", JoinInfo.CorpNum
-    tmp.Add "CorpName", JoinInfo.CorpName
-    tmp.Add "CEOName", JoinInfo.CEOName
-    tmp.Add "Addr", JoinInfo.Addr
+    tmp.Add "CorpName", JoinInfo.corpName
+    tmp.Add "CEOName", JoinInfo.ceoname
+    tmp.Add "Addr", JoinInfo.addr
     tmp.Add "ZipCode", JoinInfo.ZipCode
-    tmp.Add "BizClass", JoinInfo.BizClass
-    tmp.Add "BizType", JoinInfo.BizType
+    tmp.Add "BizClass", JoinInfo.bizClass
+    tmp.Add "BizType", JoinInfo.bizType
     tmp.Add "ContactName", JoinInfo.ContactName
     tmp.Add "ContactEmail", JoinInfo.ContactEmail
     tmp.Add "ContactFAX", JoinInfo.ContactFAX
     tmp.Add "ContactHP", JoinInfo.ContactHP
     tmp.Add "ContactTEL", JoinInfo.ContactTEL
-    tmp.Add "ID", JoinInfo.ID
-    tmp.Add "PWD", JoinInfo.PWD
+    tmp.Add "ID", JoinInfo.id
+    tmp.Add "PWD", JoinInfo.pwd
     
     postdata = m_Linkhub.toString(tmp)
     
@@ -931,6 +931,45 @@ ErrHandler:
     Set GetMessages = Nothing
 
 End Function
+
+'전송내역 요약정보 확인
+Public Function GetStates(CorpNum As String, ReceiptNumList As Collection, Optional UserID As String = "") As Collection
+On Error GoTo ErrHandler
+
+    If ReceiptNumList Is Nothing Or ReceiptNumList.Count = 0 Then
+        Err.Raise -99999999, "POPBILL", "접수번호가 입력되지 않았습니다."
+    End If
+    
+    Dim result As Variant
+    
+    Dim postdata As String
+    
+    postdata = m_Linkhub.toString(ReceiptNumList)
+    
+    Set result = httpPOST("/Message/States/", getSession_token(CorpNum), postdata, UserID)
+    
+    Set GetStates = New Collection
+    
+    Dim T As Variant
+    Dim briefMsg As PBMessageBriefInfo
+    
+    For Each T In result
+        Set briefMsg = New PBMessageBriefInfo
+        
+        briefMsg.fromDictionary T
+        
+        GetStates.Add briefMsg
+    Next
+    
+    Exit Function
+    
+ErrHandler:
+    m_LastErrCode = Err.number
+    m_LastErrMessage = Err.Description
+    Set GetStates = Nothing
+End Function
+
+
 '예약전송 취소
 Public Function CancelReserve(CorpNum As String, ReceiptNum As String, Optional UserID As String = "") As PBResponse
 On Error GoTo ErrHandler
@@ -1021,4 +1060,5 @@ ErrHandler:
     m_LastErrMessage = Err.Description
     Set GetSenderNumberList = Nothing
 End Function
+
 
