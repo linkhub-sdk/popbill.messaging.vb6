@@ -735,7 +735,7 @@ ErrHandler:
     GetUnitCost = m_LastErrCode
 End Function
 'SendMMS
-Public Function SendMMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, FilePaths As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional senderName As String = "") As String
+Public Function SendMMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, FilePaths As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional requestNum As String = "") As String
 On Error GoTo ErrHandler
     
     Dim result As Variant
@@ -749,10 +749,10 @@ On Error GoTo ErrHandler
     Set request = CreateObject("Scripting.Dictionary")
     If adsYN Then request.Add "adsYN", True
     If sender <> "" Then request.Add "snd", sender
-    If senderName <> "" Then request.Add "sndnm", senderName
     If Contents <> "" Then request.Add "content", Contents
     If subject <> "" Then request.Add "subject", subject
     If reserveDT <> "" Then request.Add "sndDT", reserveDT
+    If requestNum <> "" Then request.Add "requestNum", requestNum
     
     Dim msgs As New Collection
     
@@ -780,19 +780,19 @@ ErrHandler:
     SendMMS = ""
 End Function
 '단문 전송
-Public Function SendSMS(CorpNum As String, sender As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional senderName As String = "") As String
-    SendSMS = SendMessage("SMS", CorpNum, sender, "", Contents, Messages, reserveDT, adsYN, UserID, senderName)
+Public Function SendSMS(CorpNum As String, sender As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional requestNum As String = "") As String
+    SendSMS = SendMessage("SMS", CorpNum, sender, "", Contents, Messages, reserveDT, adsYN, UserID, requestNum)
 End Function
 '장문전송
-Public Function SendLMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional senderName As String = "") As String
-    SendLMS = SendMessage("LMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, senderName)
+Public Function SendLMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional requestNum As String = "") As String
+    SendLMS = SendMessage("LMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, requestNum)
 End Function
 '단/장문 길이 자동인식 전송
-Public Function SendXMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional senderName As String = "") As String
-    SendXMS = SendMessage("XMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, senderName)
+Public Function SendXMS(CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional requestNum As String = "") As String
+    SendXMS = SendMessage("XMS", CorpNum, sender, subject, Contents, Messages, reserveDT, adsYN, UserID, requestNum)
 End Function
 
-Private Function SendMessage(MType As String, CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional senderName As String = "") As String
+Private Function SendMessage(MType As String, CorpNum As String, sender As String, subject As String, Contents As String, Messages As Collection, reserveDT As String, adsYN As Boolean, Optional UserID As String = "", Optional requestNum As String = "") As String
 On Error GoTo ErrHandler
     Dim result As Variant
     If Messages Is Nothing Or Messages.Count = 0 Then
@@ -805,10 +805,10 @@ On Error GoTo ErrHandler
     If adsYN Then request.Add "adsYN", True
     
     If sender <> "" Then request.Add "snd", sender
-    If senderName <> "" Then request.Add "sndnm", senderName
     If Contents <> "" Then request.Add "content", Contents
     If subject <> "" Then request.Add "subject", subject
     If reserveDT <> "" Then request.Add "sndDT", reserveDT
+    If requestNum <> "" Then request.Add "requestNum", requestNum
     
     Dim msgs As New Collection
     
@@ -932,6 +932,37 @@ ErrHandler:
 
 End Function
 
+'전송내역 확인(요청번호 할당)
+Public Function GetMessagesRN(CorpNum As String, requestNum As String, Optional UserID As String = "") As Collection
+On Error GoTo ErrHandler
+    Dim result As Variant
+    If requestNum = "" Then
+        Err.Raise -99999999, "POPBILL", "요청번호가 입력되지 않았습니다."
+    End If
+    
+    Set result = httpGET("/Message/Get/" & requestNum, getSession_token(CorpNum), UserID)
+    
+    Set GetMessagesRN = New Collection
+    
+    Dim T As Variant
+    Dim sentMsg As PBSentMsg
+    
+    For Each T In result
+        Set sentMsg = New PBSentMsg
+        
+        sentMsg.fromDictionary T
+        
+        GetMessagesRN.Add sentMsg
+    Next
+    
+    Exit Function
+ErrHandler:
+    m_LastErrCode = Err.number
+    m_LastErrMessage = Err.Description
+    Set GetMessagesRN = Nothing
+
+End Function
+
 '전송내역 요약정보 확인
 Public Function GetStates(CorpNum As String, ReceiptNumList As Collection, Optional UserID As String = "") As Collection
 On Error GoTo ErrHandler
@@ -989,6 +1020,28 @@ ErrHandler:
     m_LastErrCode = Err.number
     m_LastErrMessage = Err.Description
     Set CancelReserve = Nothing
+
+End Function
+
+'예약전송 취소 (요청번호 할당)
+Public Function CancelReserveRN(CorpNum As String, requestNum As String, Optional UserID As String = "") As PBResponse
+On Error GoTo ErrHandler
+    Dim result As Variant
+    If requestNum = "" Then
+        Err.Raise -99999999, "POPBILL", "요청번호가 입력되지 않았습니다."
+    End If
+    
+    Set result = httpGET("/Message/Cancel/" & requestNum, getSession_token(CorpNum), UserID)
+    Set CancelReserveRN = New PBResponse
+    
+    CancelReserveRN.code = result.Item("code")
+    CancelReserveRN.message = result.Item("message")
+    
+    Exit Function
+ErrHandler:
+    m_LastErrCode = Err.number
+    m_LastErrMessage = Err.Description
+    Set CancelReserveRN = Nothing
 
 End Function
 
