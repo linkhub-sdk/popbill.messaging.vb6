@@ -20,6 +20,7 @@ Public rlt As String
 Public sDT As String
 Public rDT As String
 Public net As String
+Public srt As String
 
 
 Public Function toDictionary() As Variant
@@ -30,6 +31,7 @@ Public Function toDictionary() As Variant
     sDT = dic.Item("sDT")
     rDT = dic.Item("rDT")
     net = dic.Item("net")
+    srt = dic.Item("srt")
 End Function
 
 
@@ -41,5 +43,5 @@ Public Sub fromDictionary(dic As Variant)
     sDT = dic.Item("sDT")
     rDT = dic.Item("rDT")
     net = dic.Item("net")
-
+    srt = dic.Item("srt")
 End Sub
