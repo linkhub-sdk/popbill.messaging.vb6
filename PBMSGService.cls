@@ -25,6 +25,8 @@ Option Explicit
 ' Written : 2014-04-22
 ' Contributor : Jeong Yohan (code@linkhub.co.kr)
 ' Updated : 2017-08-30
+' Contributor : Kim EunHye (code@linkhub.co.kr)
+' Updated : 2018-10-04
 '
 ' Thanks for your interest.
 '=================================================================================
@@ -908,14 +910,14 @@ ErrHandler:
 End Function
 
 '전송내역 확인
-Public Function GetMessages(CorpNum As String, ReceiptNum As String, Optional UserID As String = "") As Collection
+Public Function GetMessages(CorpNum As String, receiptNum As String, Optional UserID As String = "") As Collection
 On Error GoTo ErrHandler
     Dim result As Variant
-    If ReceiptNum = "" Then
+    If receiptNum = "" Then
         Err.Raise -99999999, "POPBILL", "접수번호가 입력되지 않았습니다."
     End If
     
-    Set result = httpGET("/Message/" & ReceiptNum, getSession_token(CorpNum), UserID)
+    Set result = httpGET("/Message/" & receiptNum, getSession_token(CorpNum), UserID)
     
     Set GetMessages = New Collection
     
@@ -1008,14 +1010,14 @@ End Function
 
 
 '예약전송 취소
-Public Function CancelReserve(CorpNum As String, ReceiptNum As String, Optional UserID As String = "") As PBResponse
+Public Function CancelReserve(CorpNum As String, receiptNum As String, Optional UserID As String = "") As PBResponse
 On Error GoTo ErrHandler
     Dim result As Variant
-    If ReceiptNum = "" Then
+    If receiptNum = "" Then
         Err.Raise -99999999, "POPBILL", "접수번호가 입력되지 않았습니다."
     End If
     
-    Set result = httpGET("/Message/" & ReceiptNum & "/Cancel", getSession_token(CorpNum), UserID)
+    Set result = httpGET("/Message/" & receiptNum & "/Cancel", getSession_token(CorpNum), UserID)
     Set CancelReserve = New PBResponse
     
     CancelReserve.code = result.Item("code")
