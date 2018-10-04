@@ -28,6 +28,8 @@ Public sendDT          As String
 Public resultDT        As String
 Public sendResult      As String
 Public tranNet         As String
+Public receiptNum      As String
+Public requestNum      As String
 
 Public Sub fromDictionary(dic As Variant)
 
@@ -46,6 +48,8 @@ Public Sub fromDictionary(dic As Variant)
     resultDT = dic.Item("resultDT")
     sendResult = dic.Item("sendResult")
     tranNet = dic.Item("tranNet")
+    receiptNum = dic.Item("receiptNum")
+    requestNum = dic.Item("requestNum")
     
 End Sub
 
