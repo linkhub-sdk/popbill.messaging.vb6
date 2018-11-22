@@ -1127,7 +1127,6 @@ ErrHandler:
     GetSentListURL = ""
 End Function
 
-
 '발신번호 관리 팝업 URL
 Public Function GetSenderNumberMgtURL(CorpNum As String, UserID As String) As String
 On Error GoTo ErrHandler
