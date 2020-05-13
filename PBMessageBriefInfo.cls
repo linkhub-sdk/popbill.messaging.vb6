@@ -22,19 +22,6 @@ Public rDT As String
 Public net As String
 Public srt As String
 
-
-Public Function toDictionary() As Variant
-    rNum = dic.Item("rNum")
-    sn = dic.Item("sn")
-    stat = dic.Item("stat")
-    rlt = dic.Item("rlt")
-    sDT = dic.Item("sDT")
-    rDT = dic.Item("rDT")
-    net = dic.Item("net")
-    srt = dic.Item("srt")
-End Function
-
-
 Public Sub fromDictionary(dic As Variant)
     rNum = dic.Item("rNum")
     sn = dic.Item("sn")
