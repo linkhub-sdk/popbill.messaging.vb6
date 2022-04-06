@@ -153,10 +153,10 @@ Public Property Let UseLocalTimeYN(ByVal value As Boolean)
 End Property
 
 '초기화
-Public Sub Initialize(LinkID As String, SecretKey As String)
+Public Sub Initialize(linkID As String, SecretKey As String)
     Set m_Linkhub = New Linkhub
     
-    m_Linkhub.LinkID = LinkID
+    m_Linkhub.linkID = linkID
     m_Linkhub.SercetKey = SecretKey
     
     m_scope.Add "member"
@@ -763,20 +763,20 @@ ErrHandler:
 End Function
 
 '회원가입 여부
-Public Function CheckIsMember(CorpNum As String, LinkID As String) As PBResponse
+Public Function CheckIsMember(CorpNum As String, linkID As String) As PBResponse
 On Error GoTo ErrHandler
     If CorpNum = "" Then
         Err.Raise -99999999, "POPBILL", "팝빌회원의 사업자번호가 입력되지 않았습니다."
     End If
 
 
-    If LinkID = "" Then
+    If linkID = "" Then
         Err.Raise -99999999, "POPBILL", "링크아이디(LinkID)가 입력되지 않았습니다."
     End If
     
     Dim result As Variant
     
-    Set result = httpGET("/Join?CorpNum=" + CorpNum + "&LID=" + LinkID, "")
+    Set result = httpGET("/Join?CorpNum=" + CorpNum + "&LID=" + linkID, "")
     
     Set CheckIsMember = New PBResponse
     CheckIsMember.code = result.Item("code")
@@ -797,7 +797,7 @@ On Error GoTo ErrHandler
     
     Set tmp = CreateObject("Scripting.Dictionary")
     
-    tmp.Add "LinkID", JoinInfo.LinkID
+    tmp.Add "LinkID", JoinInfo.linkID
     tmp.Add "CorpNum", JoinInfo.CorpNum
     tmp.Add "CorpName", JoinInfo.corpName
     tmp.Add "CEOName", JoinInfo.ceoname
@@ -1223,6 +1223,28 @@ ErrHandler:
     m_LastErrCode = Err.number
     m_LastErrMessage = Err.Description
     GetSentListURL = ""
+End Function
+
+'발신번호 등록여부 확인
+Public Function CheckSenderNumber(CorpNum As String, SenderNumber As String, Optional UserID As String = "") As PBResponse
+On Error GoTo ErrHandler
+    Dim result As Variant
+    
+    If SenderNumber = "" Then
+        Err.Raise -99999999, "POPBILL", "발신번호가 입력되지 않았습니다."
+    End If
+
+    Set result = httpGET("/Message/CheckSenderNumber/" + SenderNumber, getSession_token(CorpNum), UserID)
+    
+    Set CheckSenderNumber = New PBResponse
+    
+    CheckSenderNumber.code = result.Item("code")
+    CheckSenderNumber.message = result.Item("message")
+    Exit Function
+ErrHandler:
+    m_LastErrCode = Err.number
+    m_LastErrMessage = Err.Description
+    Set CheckSenderNumber = Nothing
 End Function
 
 '발신번호 관리 팝업 URL
