@@ -19,6 +19,7 @@ Public receiver As String
 Public receiverName As String
 Public content As String
 Public subject As String
+Public interOPRefKey As String
 
 
 Public Function toDictionary() As Variant
@@ -30,5 +31,6 @@ Public Function toDictionary() As Variant
     If receiverName <> "" Then toDictionary.Add "rcvnm", receiverName
     If content <> "" Then toDictionary.Add "msg", content
     If subject <> "" Then toDictionary.Add "sjt", subject
+    If interOPRefKey <> "" Then toDictionary.Add "interOPRefKey", interOPRefKey
     
 End Function

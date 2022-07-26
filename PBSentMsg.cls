@@ -30,6 +30,7 @@ Public sendResult      As String
 Public tranNet         As String
 Public receiptNum      As String
 Public requestNum      As String
+Public interOPRefKey   As String
 
 Public Sub fromDictionary(dic As Variant)
 
@@ -50,6 +51,7 @@ Public Sub fromDictionary(dic As Variant)
     tranNet = dic.Item("tranNet")
     receiptNum = dic.Item("receiptNum")
     requestNum = dic.Item("requestNum")
+    interOPRefKey = dic.Item("interOPRefKey")
     
 End Sub
 
