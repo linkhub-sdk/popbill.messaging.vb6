@@ -24,7 +24,7 @@ Option Explicit
 ' Author : Kim Seongjun
 ' Written : 2014-04-22
 ' Contributor : Jeong Yohan (code@linkhubcorp.com)
-' Updated : 2022-07-26
+' Updated : 2022-11-01
 '
 ' Thanks for your interest.
 '=================================================================================
@@ -473,7 +473,7 @@ On Error GoTo ErrHandler
     CheckID.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set CheckID = Nothing
 End Function
@@ -499,7 +499,7 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetContactInfo = Nothing
 End Function
@@ -528,7 +528,7 @@ On Error GoTo ErrHandler
     Exit Function
     
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set ListContact = Nothing
 End Function
@@ -566,7 +566,7 @@ On Error GoTo ErrHandler
     RegistContact.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
 End Function
 '담당자 정보 수정
@@ -601,7 +601,7 @@ On Error GoTo ErrHandler
     UpdateContact.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
 End Function
 '회사정보 수정
@@ -632,7 +632,7 @@ On Error GoTo ErrHandler
     UpdateCorpInfo.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
 End Function
 '회사정보 조회
@@ -648,7 +648,7 @@ On Error GoTo ErrHandler
     Exit Function
     
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetCorpInfo = Nothing
 End Function
@@ -660,7 +660,7 @@ Public Function GetBalance(CorpNum As String) As Double
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetBalance = m_LastErrCode
 End Function
@@ -672,7 +672,7 @@ Public Function GetPartnerBalance(CorpNum As String) As Double
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetPartnerBalance = m_LastErrCode
 End Function
@@ -685,7 +685,7 @@ Public Function GetPartnerURL(CorpNum As String, TOGO As String) As String
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetPartnerURL = m_LastErrCode
 End Function
@@ -700,7 +700,7 @@ On Error GoTo ErrHandler
     GetPopbillURL = result.Item("url")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetPopbillURL = ""
 End Function
@@ -715,7 +715,7 @@ On Error GoTo ErrHandler
    GetAccessURL = result.Item("url")
    Exit Function
 ErrHandler:
-   m_LastErrCode = Err.number
+   m_LastErrCode = Err.Number
    m_LastErrMessage = Err.Description
    GetAccessURL = ""
 End Function
@@ -730,7 +730,7 @@ On Error GoTo ErrHandler
    GetChargeURL = result.Item("url")
    Exit Function
 ErrHandler:
-   m_LastErrCode = Err.number
+   m_LastErrCode = Err.Number
    m_LastErrMessage = Err.Description
    GetChargeURL = ""
 End Function
@@ -745,7 +745,7 @@ On Error GoTo ErrHandler
     GetPaymentURL = result.Item("url")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetPaymentURL = ""
 End Function
@@ -760,7 +760,7 @@ On Error GoTo ErrHandler
     GetUseHistoryURL = result.Item("url")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetUseHistoryURL = ""
 End Function
@@ -786,7 +786,7 @@ On Error GoTo ErrHandler
     CheckIsMember.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set CheckIsMember = Nothing
 End Function
@@ -829,7 +829,7 @@ On Error GoTo ErrHandler
     JoinMember.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
 End Function
 
@@ -856,7 +856,7 @@ On Error GoTo ErrHandler
     Exit Function
     
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetChargeInfo = Nothing
 End Function
@@ -881,7 +881,7 @@ On Error GoTo ErrHandler
     GetUnitCost = result.Item("unitCost")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetUnitCost = m_LastErrCode
 End Function
@@ -926,7 +926,7 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     SendMMS = ""
 End Function
@@ -982,7 +982,7 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     SendMessage = ""
 End Function
@@ -1049,7 +1049,7 @@ On Error GoTo ErrHandler
     Exit Function
     
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set Search = Nothing
 End Function
@@ -1079,7 +1079,7 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetMessages = Nothing
 
@@ -1110,7 +1110,7 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetMessagesRN = Nothing
 
@@ -1148,7 +1148,7 @@ On Error GoTo ErrHandler
     Exit Function
     
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetStates = Nothing
 End Function
@@ -1170,7 +1170,7 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set CancelReserve = Nothing
 
@@ -1192,9 +1192,68 @@ On Error GoTo ErrHandler
     
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set CancelReserveRN = Nothing
+
+End Function
+
+'예약전송 취소 (수신번호)
+Public Function CancelReservebyRCV(CorpNum As String, receiptNum As String, receiveNum As String, Optional UserID As String = "") As PBResponse
+On Error GoTo ErrHandler
+    Dim result As Variant
+    Dim postData As String
+    
+    If Not Len(receiptNum) = 18 Then
+        Err.Raise -99999999, "POPBILL", "접수번호(receiptNum)가 올바르지 않습니다."
+    End If
+    If receiveNum = "" Then
+        Err.Raise -99999999, "POPBILL", "수신번호가 입력되지 않았습니다."
+    End If
+              
+    postData = receiveNum
+    
+    Set result = httpPOST("/Message/" & receiptNum & "/Cancel", getSession_token(CorpNum), postData, UserID)
+    Set CancelReservebyRCV = New PBResponse
+    
+    CancelReservebyRCV.code = result.Item("code")
+    CancelReservebyRCV.message = result.Item("message")
+    
+    Exit Function
+ErrHandler:
+    m_LastErrCode = Err.Number
+    m_LastErrMessage = Err.Description
+    Set CancelReservebyRCV = Nothing
+
+End Function
+
+'예약전송 취소 (요청번호 할당, 수신번호)
+Public Function CancelReserveRNbyRCV(CorpNum As String, requestNum As String, receiveNum As String, Optional UserID As String = "") As PBResponse
+On Error GoTo ErrHandler
+    Dim result As Variant
+    Dim postData As String
+    
+    If requestNum = "" Then
+        Err.Raise -99999999, "POPBILL", "요청번호가 입력되지 않았습니다."
+    End If
+    If receiveNum = "" Then
+        Err.Raise -99999999, "POPBILL", "수신번호가 입력되지 않았습니다."
+    End If
+    
+    
+    postData = receiveNum
+    
+    Set result = httpPOST("/Message/Cancel/" & requestNum, getSession_token(CorpNum), postData, UserID)
+    Set CancelReserveRNbyRCV = New PBResponse
+    
+    CancelReserveRNbyRCV.code = result.Item("code")
+    CancelReserveRNbyRCV.message = result.Item("message")
+    
+    Exit Function
+ErrHandler:
+    m_LastErrCode = Err.Number
+    m_LastErrMessage = Err.Description
+    Set CancelReserveRNbyRCV = Nothing
 
 End Function
 
@@ -1208,7 +1267,7 @@ On Error GoTo ErrHandler
     GetURL = result.Item("url")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetURL = ""
 End Function
@@ -1223,7 +1282,7 @@ On Error GoTo ErrHandler
     GetSentListURL = result.Item("url")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetSentListURL = ""
 End Function
@@ -1245,7 +1304,7 @@ On Error GoTo ErrHandler
     CheckSenderNumber.message = result.Item("message")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set CheckSenderNumber = Nothing
 End Function
@@ -1260,7 +1319,7 @@ On Error GoTo ErrHandler
     GetSenderNumberMgtURL = result.Item("url")
     Exit Function
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     GetSenderNumberMgtURL = ""
 End Function
@@ -1288,7 +1347,7 @@ On Error GoTo ErrHandler
     Exit Function
    
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetAutoDenyList = Nothing
 End Function
@@ -1315,7 +1374,7 @@ On Error GoTo ErrHandler
     Exit Function
    
 ErrHandler:
-    m_LastErrCode = Err.number
+    m_LastErrCode = Err.Number
     m_LastErrMessage = Err.Description
     Set GetSenderNumberList = Nothing
 End Function
